@@ -1,0 +1,10 @@
+0     TFSC
+1    TFSCR
+2    TFSCU
+3    TFSCW
+4      PIH
+5     FLWS
+6     FCTY
+7     FCCY
+8     SRCE
+9     VNET
