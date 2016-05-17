@@ -1,7 +1,9 @@
 # StockScraper
 Scraper that fetches Stock data for major Stocks.Resolution: Minute Level.
-Create a schema names stocksdb
-table name: financialTable
+Create a schema:stocksdb
+create user:honeybee
+create password:honeybee
+table name:financialTable
 Run the following queries
 ALTER TABLE financialTable
 ADD a VARCHAR(45),
