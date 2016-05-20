@@ -1,0 +1,36 @@
+#to initialize MySQL database.
+#specify a VOLUME ["/var/lib/mysql"] or `-v /var/lib/mysql` on the `docker run` command
+#Once built, do e.g. `docker run your_image /path/to/docker-mysql-initialize.sh`
+echo -n " running init_db"
+set -e
+set -x
+#mysqld
+echo -n " running mysql install db "
+mysql_install_db --datadir=/var/lib/mysql
+#start mysql daemon in the background
+/usr/sbin/mysqld &
+mysql_pid=$!
+echo -n 'started mysqld'
+until mysqladmn ping &>/dev/null; do
+ echo -n "."; sleep 0.2
+done
+
+# Permit root login without password from outside container
+mysql -e "GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '' WITH GRANT OPTION"
+
+#create the default database from file.
+mysql < /tmp/stocksScraperSchema.sql
+
+#Shutdown MySQL daemon
+mysqladmin shutdown
+
+#Wait for daemon to exit
+wait $mysql_pid
+echo -n 'create a tarfile'
+#create a tar file with the databse
+tar czvf default_mysql.tar.gz /var/lib/mysql
+
+# the tarfile contains the initialized state of the database.
+# when the container is started, if the database is empty (/var/lib/mysql)
+# then it is unpacked from default_mysql.tar.gz from
+# the ENTRYPOINT /tmp/run_db script
