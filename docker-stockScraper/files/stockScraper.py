@@ -72,6 +72,7 @@ def concatTickers(filename):
 	tickerFrame = pd.DataFrame()
 	#dataframe for tickers
 	tickerFrame['TickerName'] = fullList
+	print tickers;
 	return tickers
 
 def writeToDB(frame):
@@ -82,17 +83,16 @@ def writeToDB(frame):
 	frame = pd.DataFrame()
 	return frame
 
-def job():
+def job(tickers):
 	global count
 	global countToWrite
 	while(True):
-		global tickers
 		getPrice(tickers)
 		countToWrite+=len(frame)
 		if(countToWrite>=float(count)):
 			global frame
 			global countToWrite
-			countToWrite = 0
+			countToWrite = 0	
 			frame=writeToDB(frame)
 		time.sleep(50)
 	#threading.Timer(1,job).start()
@@ -108,10 +108,10 @@ def main():
 		sys.exit(2)
 	global frame
 	frame = pd.DataFrame()
-	filename = 'tickers300.txt'
-	global tickers
+	filename = 'tickers10.txt'
+#	global tickers
 	tickers = concatTickers(filename)
-	job()
+	job(tickers)
 #	frame.to_csv('out.csv',sep = ',')
 	assert frame['s'].all() == frame['tickerName'].all()
 	frame = frame.astype(object).where(pd.notnull(frame), None)

@@ -6,31 +6,66 @@ set -e
 set -x
 #mysqld
 echo -n " running mysql install db "
-mysql_install_db --datadir=/var/lib/mysql
 #start mysql daemon in the background
-/usr/sbin/mysqld &
-mysql_pid=$!
+service mysql start
 echo -n 'started mysqld'
-until mysqladmn ping &>/dev/null; do
- echo -n "."; sleep 0.2
-done
 
-# Permit root login without password from outside container
-mysql -e "GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '' WITH GRANT OPTION"
+mysql -u root
 
-#create the default database from file.
-mysql < /tmp/stocksScraperSchema.sql
+create database stocksdb;
+use stocksdb;
+CREATE TABLE financialTable
+(
+recordid INTEGER AUTO_INCREMENT,
+a VARCHAR(45),
+a2 VARCHAR(45),
+b VARCHAR(45), 
+b2 VARCHAR(45), 
+b3 VARCHAR(45), 
+b4 VARCHAR(45), 
+c VARCHAR(45), 
+c1 VARCHAR(45), 
+c3 VARCHAR(45), 
+c4 VARCHAR(45),
+c6 VARCHAR(45),
+c8 VARCHAR(45),
+d VARCHAR(45),
+d1 VARCHAR(45),
+d2 VARCHAR(45),
+e VARCHAR(45),
+e1 VARCHAR(45),
+e7 VARCHAR(45),
+e8 VARCHAR(45),
+e9 VARCHAR(45),
+g VARCHAR(45),
+h VARCHAR(45),
+j VARCHAR(45),
+k VARCHAR(45),
+g1 VARCHAR(45),
+g3 VARCHAR(45),
+g4 VARCHAR(45),
+g5 VARCHAR(45),
+g6 VARCHAR(45),
+i VARCHAR(45),
+i5 VARCHAR(45),
+j1 VARCHAR(45),
+j3 VARCHAR(45),
+j4 VARCHAR(45),
+j5 VARCHAR(45),
+j6 VARCHAR(45),
+k1 VARCHAR(45),
+k2 VARCHAR(45),
+k4 VARCHAR(45),
+k5 VARCHAR(45),
+l VARCHAR(45),
+l1 VARCHAR(45),
+l2 VARCHAR(45),
+l3 VARCHAR(45),
+m VARCHAR(45), 
+m2 VARCHAR(45),
+m3 VARCHAR(45),  m4 VARCHAR(45),  m5 VARCHAR(45),  m6 VARCHAR(45),  m7 VARCHAR(45),  m8 VARCHAR(45),  n VARCHAR(45),  n4 VARCHAR(45),  o VARCHAR(45),  p VARCHAR(45),  p1 VARCHAR(45),  p2 VARCHAR(45),  p5 VARCHAR(45),  p6 VARCHAR(45),  q VARCHAR(45),  r VARCHAR(45),  r1 VARCHAR(45),  r2 VARCHAR(45),  r5 VARCHAR(45),  r6 VARCHAR(45),  r7 VARCHAR(45),  s VARCHAR(45),  s1 VARCHAR(45),  s7 VARCHAR(45),  t1 VARCHAR(45),  t7 VARCHAR(45),  t8 VARCHAR(45),  v VARCHAR(45),  v1 VARCHAR(45),  v7 VARCHAR(46),  w VARCHAR(45),  w1 VARCHAR(45),  w4 VARCHAR(45),  x VARCHAR(45),  y VARCHAR(45),  tickerName VARCHAR(45),  timestamp VARCHAR(45),
+PRIMARY KEY(recordid)
+)
 
-#Shutdown MySQL daemon
-mysqladmin shutdown
-
-#Wait for daemon to exit
-wait $mysql_pid
-echo -n 'create a tarfile'
-#create a tar file with the databse
-tar czvf default_mysql.tar.gz /var/lib/mysql
-
-# the tarfile contains the initialized state of the database.
-# when the container is started, if the database is empty (/var/lib/mysql)
-# then it is unpacked from default_mysql.tar.gz from
-# the ENTRYPOINT /tmp/run_db script
+GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '' WITH GRANT OPTION
+GRANT ALL ON stocksdb.* to 'honeybee'@'%' identified by 'honeybee';
